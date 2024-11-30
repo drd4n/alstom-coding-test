@@ -83,14 +83,15 @@ public class TicketService {
             log.error("Invalid departure date: {}", updateTicketRequest.departureDate());
             throw new RuntimeException(TicketErrorMessage.INVALID_DEPARTURE_DATE.getMessage());
         }
+        Ticket ticket = getTicketById(ticketId);
         Train train = trainService.getTrainById(updateTicketRequest.trainId());
         List<Ticket> bookedTickets = ticketRepository.findAllByTrainAndDepartureDate(train, updateTicketRequest.departureDate());
         Set<String> bookedSeatNumbers = bookedTickets.stream().map(Ticket::getSeatNumber).collect(Collectors.toSet());
+        bookedSeatNumbers.remove(ticket.getSeatNumber());
         if (bookedSeatNumbers.contains(updateTicketRequest.seatNumber())){
             log.error("Seat is already booked: {}", updateTicketRequest.seatNumber());
             throw new RuntimeException(TicketErrorMessage.SEAT_NOT_AVAILABLE.getMessage(updateTicketRequest.seatNumber()));
         }
-        Ticket ticket = getTicketById(ticketId);
         ticketMapper.patch(ticket, updateTicketRequest,train);
         ticket = ticketRepository.save(ticket);
         log.info("Updated ticket with id: {}", ticket.getId());
