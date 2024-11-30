@@ -16,6 +16,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -83,9 +84,15 @@ public class StationService {
 
     @Transactional
     public void deleteStationById(long stationId) {
-        stationContactInformationRepository.deleteAllByStationId(stationId);
-        log.info("Delete station id: {}", stationId);
-        stationRepository.deleteById(stationId);
+        try {
+            stationContactInformationRepository.deleteAllByStationId(stationId);
+            log.info("Delete station id: {}", stationId);
+            stationRepository.deleteById(stationId);
+        } catch (DataIntegrityViolationException e) {
+            log.error("Cannot delete station with id: {}", stationId);
+            throw new DataIntegrityViolationException(StationErrorMessage.CANNOT_DELETE_STATION.getMessage(String.valueOf(stationId)));
+        }
+
     }
 
     private StationContactInformation getStationContactInformationById(long stationContactInformationId) {

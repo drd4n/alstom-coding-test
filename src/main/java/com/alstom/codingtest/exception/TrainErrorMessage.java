@@ -2,7 +2,8 @@ package com.alstom.codingtest.exception;
 
 public enum TrainErrorMessage {
 
-    TRAIN_NOT_FOUND("Train {replacement} not found"),;
+    TRAIN_NOT_FOUND("Train {replacement} not found"),
+    TRAIN_WERE_BOOKED("Cannot delete Train {replacement} because it was already booked"),;
 
     private final String message;
 

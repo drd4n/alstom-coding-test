@@ -11,7 +11,9 @@ import com.alstom.codingtest.repository.TrainRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.postgresql.util.PSQLException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -88,8 +90,14 @@ public class TrainService {
 
     @Transactional
     public void deleteTrain(String trainId) {
-        log.info("Deleting train with id: {}", trainId);
-        trainRepository.deleteById(trainId);
+        try {
+            log.info("Deleting train with id: {}", trainId);
+            trainRepository.deleteById(trainId);
+        } catch (DataIntegrityViolationException e) {
+            log.error("Cannot delete Train with id: {} were booked", trainId);
+            throw new DataIntegrityViolationException(TrainErrorMessage.TRAIN_WERE_BOOKED.getMessage(trainId));
+        }
+
     }
 
 
