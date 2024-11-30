@@ -2,7 +2,8 @@ package com.alstom.codingtest.exception;
 
 public enum StationErrorMessage {
 
-    STATION_NOT_FOUND("Station {replacement} not found"),;
+    STATION_NOT_FOUND("Station {replacement} not found"),
+    STATION_CONTACT_INFORMATION_NOT_FOUND("Station contact information {replacement} not found");
 
     private final String message;
 

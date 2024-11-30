@@ -7,7 +7,6 @@ import java.util.List;
 public record UpdateStationRequest(
         String name,
         double latitude,
-        double longitude,
-        List<StationContactInformation> contactInformations
+        double longitude
 ) {
 }

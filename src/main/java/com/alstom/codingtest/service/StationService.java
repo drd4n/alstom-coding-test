@@ -1,7 +1,10 @@
 package com.alstom.codingtest.service;
 
+import com.alstom.codingtest.domain.request.station.CreateStationContactInformationRequest;
 import com.alstom.codingtest.domain.request.station.CreateStationRequest;
+import com.alstom.codingtest.domain.request.station.UpdateStationContactInformationRequest;
 import com.alstom.codingtest.domain.request.station.UpdateStationRequest;
+import com.alstom.codingtest.domain.response.station.StationContactInformationResponse;
 import com.alstom.codingtest.domain.response.station.StationResponse;
 import com.alstom.codingtest.entity.Station;
 import com.alstom.codingtest.entity.StationContactInformation;
@@ -15,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -81,5 +85,37 @@ public class StationService {
     public void deleteStationById(long stationId) {
         log.info("Delete station id: {}", stationId);
         stationRepository.deleteById(stationId);
+    }
+
+    private StationContactInformation getStationContactInformationById(long stationContactInformationId) {
+        return stationContactInformationRepository.findById(stationContactInformationId)
+                .orElseThrow(() -> {
+                    log.error("Station contact information not found with id: {}", stationContactInformationId);
+                    throw new EntityNotFoundException(StationErrorMessage.STATION_CONTACT_INFORMATION_NOT_FOUND.getMessage(String.valueOf(stationContactInformationId)));
+                });
+    }
+
+    @Transactional
+    public StationContactInformationResponse updateStationContactInformation(long stationContactInformationId, UpdateStationContactInformationRequest updateStationContactInformationRequest) {
+        StationContactInformation stationContactInformation = getStationContactInformationById(stationContactInformationId);
+        stationMapper.patch(stationContactInformation, updateStationContactInformationRequest);
+        log.info("Updated station contact information id: {}", stationContactInformation.getId());
+        StationContactInformation savedStationContactInformation = stationContactInformationRepository.save(stationContactInformation);
+        return stationMapper.toStationContactInformationResponse(savedStationContactInformation);
+    }
+
+    @Transactional
+    public void deleteStationContactInformationById(long stationContactInformationId) {
+        log.info("Delete station contact information id: {}", stationContactInformationId);
+        stationContactInformationRepository.deleteById(stationContactInformationId);
+    }
+
+    @Transactional
+    public StationContactInformationResponse addStationContactInformation(long stationId, CreateStationContactInformationRequest createStationContactInformationRequest) {
+        Station station = getStationById(stationId);
+        StationContactInformation stationContactInformation = stationMapper.fromCreateStationContactInformationRequest(createStationContactInformationRequest, station);
+        log.info("Created station contact information id: {}", stationContactInformation.getId());
+        StationContactInformation savedStationContactInformation = stationContactInformationRepository.save(stationContactInformation);
+        return stationMapper.toStationContactInformationResponse(savedStationContactInformation);
     }
 }
