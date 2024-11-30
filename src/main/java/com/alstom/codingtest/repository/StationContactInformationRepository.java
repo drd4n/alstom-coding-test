@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface StationContactInformationRepository extends JpaRepository<StationContactInformation, Long> {
+    void deleteAllByStationId(long stationId);
 }

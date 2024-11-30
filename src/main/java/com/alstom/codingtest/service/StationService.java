@@ -83,6 +83,7 @@ public class StationService {
 
     @Transactional
     public void deleteStationById(long stationId) {
+        stationContactInformationRepository.deleteAllByStationId(stationId);
         log.info("Delete station id: {}", stationId);
         stationRepository.deleteById(stationId);
     }
